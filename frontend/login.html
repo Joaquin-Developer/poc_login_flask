@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Example</title>
+</head>
+
+<body>
+    <h2>Register</h2>
+    <input type="email" id="register-email" placeholder="Email" required>
+    <input type="password" id="register-password" placeholder="Password" required>
+    <button onclick="register()">Register</button>
+
+    <h2>Login</h2>
+    <input type="email" id="login-email" placeholder="Email" required>
+    <input type="password" id="login-password" placeholder="Password" required>
+    <button onclick="login()">Login</button>
+
+    <h2>Protected Data</h2>
+    <button onclick="getProtectedData()">Get Data</button>
+
+    <script>
+        async function register() {
+            const email = document.getElementById("register-email").value;
+            const password = document.getElementById("register-password").value;
+
+            const response = await fetch("http://localhost:5000/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            console.log(data);
+        }
+
+        async function login() {
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+
+            const response = await fetch("http://localhost:5000/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            if (response.status === 200) {
+                localStorage.setItem("token", data.access_token);
+                alert("Login successful!");
+            } else {
+                alert("Login failed!");
+            }
+        }
+
+        async function getProtectedData() {
+            const token = localStorage.getItem("token");
+            const response = await fetch("http://localhost:5000/protected", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            console.log(data);
+        }
+    </script>
+</body>
+
+</html>
